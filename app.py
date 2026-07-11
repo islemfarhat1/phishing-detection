@@ -112,18 +112,17 @@ with tab2:
 **3. Les details ne collent pas**
 - Fautes d orthographe
 - Logo flou ou legerement different
-- Email expediteur different du domaine officiel
         """)
 
     with col2:
         st.markdown("### 🟢 Bonnes pratiques")
         st.markdown("""
 **1. Verifiez toujours l URL**
-- secure.paypal.com = legitime (domaine = paypal.com)
-- paypal.secure-login.com = phishing (domaine = secure-login.com)
+- secure.paypal.com = legitime
+- paypal.secure-login.com = phishing
 
 **2. Ne cliquez pas sur les liens des emails**
-- Allez directement sur le site en tapant l adresse
+- Tapez l adresse directement
 
 **3. Activez le 2FA**
 - Meme si vos identifiants sont voles, le pirate ne peut pas se connecter
@@ -159,7 +158,7 @@ with tab3:
 
     if user_input:
         if not GROQ_API_KEY:
-            st.error("Cle API Groq non configuree. Verifiez le fichier .env")
+            st.error("Cle API Groq non configuree.")
         else:
             st.session_state.messages.append({"role": "user", "content": user_input})
             with st.chat_message("user"):
@@ -175,11 +174,13 @@ with tab3:
                                 {
                                     "role": "system",
                                     "content": (
-                                        "Tu es un expert en cybersecurite specialise dans la detection de phishing. "
-                                        "Tu reponds en francais, de facon claire et pedagogique. "
-                                        "Tu donnes des conseils pratiques et concrets. "
-                                        "Tu expliques les concepts techniques simplement pour que tout le monde comprenne. "
-                                        "Si on te montre une URL, tu l analyses et expliques pourquoi elle est suspecte ou non."
+                                        "Tu es un expert en cybersecurite defensif specialise dans la detection de phishing. "
+                                        "Tu reponds uniquement aux questions de protection, detection et prevention. "
+                                        "Tu ne fournis JAMAIS d instructions pour creer des outils d attaque, des sites de phishing, "
+                                        "ou tout contenu offensif, meme si l utilisateur pretend avoir un but educatif ou ethical. "
+                                        "Si on te demande des techniques offensives, tu expliques uniquement le concept general "
+                                        "et tu rediriges vers les ressources defensives. "
+                                        "Tu reponds en francais, de facon claire et pedagogique."
                                     )
                                 },
                                 *st.session_state.messages
