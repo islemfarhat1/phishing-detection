@@ -2,15 +2,45 @@
 import pandas as pd
 import joblib
 import os
+import io
 from groq import Groq
 from dotenv import load_dotenv
 from scripts.feature_extraction_v2 import extract_features_v2
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
 
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-model = joblib.load("models/phishing_model_v2.pkl")
-feature_names = joblib.load("models/feature_names_v2.pkl")
+@st.cache_resource
+def load_model():
+    try:
+        model = joblib.load("models/phishing_model_v2.pkl")
+        feature_names = joblib.load("models/feature_names_v2.pkl")
+        _ = model.predict(pd.DataFrame([[0]*len(feature_names)], columns=feature_names))
+        return model, feature_names
+    except Exception as e:
+        st.warning("Chargement du modele en cours...")
+        df = pd.read_csv("data/phishing_urls_raw.csv")
+        records, labels = [], []
+        for _, row in df.iterrows():
+            try:
+                feats = extract_features_v2(row["url"])
+                records.append(feats)
+                labels.append(1 if row["status"] == "phishing" else 0)
+            except:
+                pass
+        X = pd.DataFrame(records)
+        y = pd.Series(labels)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+        rf = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
+        rf.fit(X_train, y_train)
+        os.makedirs("models", exist_ok=True)
+        joblib.dump(rf, "models/phishing_model_v2.pkl")
+        joblib.dump(X.columns.tolist(), "models/feature_names_v2.pkl")
+        return rf, X.columns.tolist()
+
+model, feature_names = load_model()
 
 st.set_page_config(page_title="URL Phishing Detector", page_icon="🔐", layout="wide")
 st.title("🔐 URL Phishing Detector")

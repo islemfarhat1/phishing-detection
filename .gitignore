@@ -1,7 +1,7 @@
 ﻿.env
-data/
 __pycache__/
 *.pyc
 *.pyo
 .streamlit/
 scripts/feature_extraction.py
+data/phishing_urls_raw.csv
