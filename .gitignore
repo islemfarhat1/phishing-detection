@@ -35,3 +35,5 @@ models/phishing_model_v2.pkl
 scripts/feature_extraction.py
 scripts/train.py
 scripts/__pycache__/
+
+.python-version
