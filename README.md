@@ -68,7 +68,7 @@ The model is trained using URL‑based characteristics rather than webpage conte
 - **Number of trees:** 60
 - **Maximum depth:** 12
 - **Serialized model:** `models/forest.json`
-- **Feature order:** `models/feature_names_v2.pkl`
+
 
 The deployed application uses the serialized JSON representation of the Random Forest for inference, avoiding the need for the full training pipeline at startup.
 
@@ -183,21 +183,21 @@ phishing-detection/
 │   └── dataset.csv            # Dataset used for model development
 ├── models/
 │   ├── forest.json            # Serialized Random Forest model
-│   └── feature_names_v2.pkl   # Feature order (currently ignored in .gitignore)
+
 ├── scripts/
 │   ├── __init__.py
 │   ├── feature_extraction_v2.py   # URL feature extraction pipeline
 │   └── train_v2.py                # Model training script
-└── screenshots/
-    └── demo.png               # **Missing** – add a screenshot later or remove this reference
+
+
 ```
 
-> **Note:** The `screenshots/demo.png` file is currently missing from the repository. Add an appropriate screenshot to `screenshots/` and commit it, or remove the reference from the README if you prefer not to include it now.
+
 
 ---
 
 ## 🛠️ Technology Stack
-- **Machine Learning:** Python, pandas, NumPy, scikit‑learn, Random Forest
+- **Machine Learning:** Python, pandas, NumPy, Random Forest (JSON inference)
 - **Web Application:** Streamlit
 - **AI Assistant:** Groq API (LLaMA model)
 - **Security:** URL‑based phishing detection, input validation, prompt‑injection testing
@@ -254,4 +254,4 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 
 ---
 
-*Before pushing, verify that the dataset statistics (11,430 URLs / 50‑50 split / 2,286 test URLs) match your actual training run. If they are correct, keep them. Also, ensure the `screenshots/demo.png` file exists; otherwise, remove the screenshot reference from the README.*
+
