@@ -1,21 +1,37 @@
+# Environment variables
 .env
+.env.*
+
+# Python cache
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Streamlit
 .streamlit/
-scripts/feature_extraction.py
-data/phishing_urls_raw.csv
-.env
-__pycache__/
-*.pyc
-*.pyo
-.streamlit/
-scripts/feature_extraction.py
-data/phishing_urls_raw.csv
+
+# Generated outputs
+output/
+
+# OS / IDE artefacts
+.DS_Store
+.vscode/
+.idea/
+
+# Data files that should not be versioned
 data/phishing.csv
-retrain.py
-setup.py
+data/phishing_urls_raw.csv
+
+# Old model files
+models/feature_names_v2.pkl
+models/phishing_model.pkl
+models/phishing_model_v2.pkl
+
+# Unused scripts
+scripts/feature_extraction.py
 scripts/train.py
 scripts/__pycache__/
-output/
-phishing_detection.ipynb
