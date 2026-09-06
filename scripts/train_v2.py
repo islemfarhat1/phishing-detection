@@ -1,4 +1,6 @@
 import pandas as pd
+from pathlib import Path
+from pathlib import Path
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
@@ -7,13 +9,23 @@ import joblib
 import sys
 import os
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATASET_PATH = BASE_DIR / "data" / "dataset.csv"
+MODELS_DIR = BASE_DIR / "models"
+MODELS_DIR.mkdir(exist_ok=True)
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATASET_PATH = BASE_DIR / "data" / "dataset.csv"
+MODELS_DIR = BASE_DIR / "models"
+MODELS_DIR.mkdir(exist_ok=True)
+
 # Ajouter le dossier scripts au path pour importer feature_extraction_v2
 sys.path.append(os.path.dirname(__file__))
 from feature_extraction_v2 import extract_features_v2
 
 # ── 1. Charger le dataset ────────────────────────────────────────
 print("Chargement du dataset...")
-df = pd.read_csv(r"D:\phishing_detection\data\phishing_urls_raw.csv")
+df = pd.read_csv(DATASET_PATH)
 print(f"  Shape: {df.shape}")
 print(f"  Labels: {df['status'].value_counts().to_dict()}")
 
@@ -52,7 +64,7 @@ print(f"\nTrain: {X_train.shape}, Test: {X_test.shape}")
 
 # ── 5. Entraîner Random Forest ──────────────────────────────────
 print("\nEntraînement Random Forest...")
-rf = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
+rf = RandomForestClassifier(n_estimators=60, max_depth=12, random_state=42, n_jobs=-1)
 rf.fit(X_train, y_train)
 
 # ── 6. Évaluation ───────────────────────────────────────────────
@@ -84,13 +96,37 @@ print(f"  Prédiction: {label}")
 print(f"  Confiance phishing: {proba[1]*100:.1f}%")
 
 # ── 8. Sauvegarder le modèle ────────────────────────────────────
-os.makedirs(r"D:\phishing_detection\models", exist_ok=True)
-joblib.dump(rf, r"D:\phishing_detection\models\phishing_model_v2.pkl")
+
+joblib.dump(rf, MODELS_DIR / "phishing_model_v2.pkl")
 
 # Sauvegarder aussi la liste des features (important pour l'app)
 feature_names = X.columns.tolist()
-joblib.dump(feature_names, r"D:\phishing_detection\models\feature_names_v2.pkl")
+joblib.dump(feature_names, MODELS_DIR / "feature_names_v2.pkl")
 
 print(f"\nModèle sauvegardé: models/phishing_model_v2.pkl")
 print(f"Features sauvegardées: models/feature_names_v2.pkl")
 print("Terminé ✅")
+# ── Export vers forest.json (pour deploiement sans scikit-learn) ─────────────
+from sklearn.tree import _tree
+import json as _json
+import numpy as _np
+
+def tree_to_dict(tree):
+    t = tree.tree_
+    def recurse(node):
+        if t.feature[node] == _tree.TREE_UNDEFINED:
+            values = t.value[node][0].tolist()
+            return {'leaf': True, 'value': int(_np.argmax(values)), 'proba': [v/sum(values) for v in values]}
+        return {'feature_idx': int(t.feature[node]), 'threshold': float(t.threshold[node]),
+                'left': recurse(int(t.children_left[node])), 'right': recurse(int(t.children_right[node]))}
+    return recurse(0)
+
+forest_export = [tree_to_dict(est) for est in rf.estimators_]
+export = {'trees': forest_export, 'features': feature_names}
+with open(MODELS_DIR / "forest.json", "w", encoding="utf-8") as f:
+    _json.dump(export, f)
+
+import os
+size = os.path.getsize('models/forest.json') / 1024 / 1024
+print(f'forest.json exporte : {size:.2f} MB')
+print('Pipeline complet termine.')

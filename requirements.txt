@@ -1,7 +1,7 @@
-﻿groq
-joblib
+﻿streamlit
 pandas
+numpy
+groq
 python-dotenv
 scikit-learn==1.8.0
-streamlit
-numpy
+joblib
