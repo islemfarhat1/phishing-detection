@@ -183,7 +183,7 @@ with tab3:
                     try:
                         client = Groq(api_key=GROQ_API_KEY, timeout=20)
                         response = client.chat.completions.create(
-                            model="llama-3.3-70b-versatile",
+                            model="compound-beta-mini",
                             messages=[
                                 {
                                     "role": "system",
